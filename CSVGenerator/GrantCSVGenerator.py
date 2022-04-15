@@ -13,11 +13,10 @@ class GrantCSVGenerator:
     fieldsToWriteFromCurrentYear = [
         'tax_year', 'object_id', 'doner_name', 'doner_ein']
     fieldsToWriteFromGrant = ['recepient_name', 'recepient_address', 'zip_code', 'street_abreviation_code',
-                                    'irc_section_description', 'recepient_ein', 'recepient_cash_grant_amount', 'purpose_of_grant_txt']
-    def __init__(self, einList: list) -> None:
+                              'irc_section_description', 'recepient_ein', 'recepient_cash_grant_amount', 'purpose_of_grant_txt']
 
+    def __init__(self, einList: list) -> None:
         self.__einList = einList
-        #self.__grantDataList = self.__extractGrantDataListFromEinList()
 
     def __extractGrantDataListFromEinList(self):
         grantDataList = []
@@ -28,24 +27,24 @@ class GrantCSVGenerator:
             print(f'{(i/len(self.__einList))*100}% completed...\n\n')
         return grantDataList
 
-    def writeCSVIncrementally(self,path):
+    def writeCSVIncrementally(self, path):
         self.__writeCSVMetaData(path)
         for i, ein in enumerate(self.__einList):
             grantDataExtractor = GrantDataExtractor(ein=ein)
             if(len(grantDataExtractor.getGrantData()) != 0):
-                self.writeGrantDataToCSV(grantDataExtractor.getGrantData(),path)
+                self.writeGrantDataToCSV(
+                    grantDataExtractor.getGrantData(), path)
             print(f'{(i/len(self.__einList))*100}% completed...\n\n')
 
-    def __writeCSVMetaData(self,path):
-        with open(path,'w') as file:
+    def __writeCSVMetaData(self, path):
+        with open(path, 'w') as file:
             for field in GrantCSVGenerator.fieldsToWriteFromCurrentYear:
                 file.write(f'{field},')
-            for i,field in enumerate(GrantCSVGenerator.fieldsToWriteFromGrant):
+            for i, field in enumerate(GrantCSVGenerator.fieldsToWriteFromGrant):
                 if(i == len(GrantCSVGenerator.fieldsToWriteFromGrant)-1):
                     file.write(f'{field}\n')
                 else:
                     file.write(f'{field},')
-
 
     def writeGrantDataToCSV(self, grantData, path):
         with open(path, 'a') as file:
@@ -53,15 +52,11 @@ class GrantCSVGenerator:
                 for grant in currentYearGrants['grants']:
                     for field in GrantCSVGenerator.fieldsToWriteFromCurrentYear:
                         file.write(f'{currentYearGrants.get(field)},')
-                    for i,field in enumerate(GrantCSVGenerator.fieldsToWriteFromGrant):
+                    for i, field in enumerate(GrantCSVGenerator.fieldsToWriteFromGrant):
                         if(i == len(GrantCSVGenerator.fieldsToWriteFromGrant)-1):
                             file.write(f'{grant.get(field)}\n')
                         else:
                             file.write(f'{grant.get(field)},')
-
-
-
-
 
     def generateCSV(self, path: str):
         csvGrantList = []
