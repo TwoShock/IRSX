@@ -40,7 +40,25 @@ i2 = np.intersect1d(list(lookup.keys()), einList2).tolist()
 
 def generateCSV(inputList, start, end, outputPath):
     GrantCSVGenerator(inputList[start:end]).generateCSV(outputPath)
-def generateCSVIncrementally(inputList, start, end, outputPath):
-    GrantCSVGenerator(inputList[start:end]).generateCSVIncrementally(outputPath)
-generateCSVIncrementally(i2,0,100,'test_out.csv')
 
+
+def writeCSVIncrementally(inputList, start, end, outputPath):
+    GrantCSVGenerator(inputList[start:end]).writeCSVIncrementally(outputPath)
+
+
+def multiThreadCSVResult(inputList, folderOutputPath, numberOfThreads):
+    threadInputLength = len(inputList)/numberOfThreads
+    pool = [] 
+    for i in range(numberOfThreads):
+        start = int(threadInputLength*i)
+        end = int(start + threadInputLength)
+        print(f'thread {i}: processing {start} to {end}...')
+        thread = threading.Thread(target = writeCSVIncrementally,args=(inputList,start,end,f'{folderOutputPath}/thread_result_{start}_{end}.csv'))
+        pool.append(thread)
+    for thread in pool:
+        thread.start()
+    for thread in pool:
+        thread.join()
+
+
+multiThreadCSVResult(i2[0:100],'./out',2)

@@ -28,7 +28,7 @@ class GrantCSVGenerator:
             print(f'{(i/len(self.__einList))*100}% completed...\n\n')
         return grantDataList
 
-    def generateCSVIncrementally(self,path):
+    def writeCSVIncrementally(self,path):
         self.__writeCSVMetaData(path)
         for i, ein in enumerate(self.__einList):
             grantDataExtractor = GrantDataExtractor(ein=ein)

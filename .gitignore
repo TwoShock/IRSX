@@ -1,0 +1,6 @@
+tmp/
+.pytest_cache/
+.vscode/
+__pycache__/
+index/
+out/
