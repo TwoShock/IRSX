@@ -3,7 +3,6 @@ class Json990Parser:
     def __init__(self,json_990_filing:dict) -> None:
         self.__json_990_filing = json_990_filing
         self.__parsed_990_filing = {} 
-        self.__parse990Filing()
 
     def __parse990Filing(self):
         filing = self.__json_990_filing
@@ -20,6 +19,7 @@ class Json990Parser:
             self.__parsed_990_filing.update(schedule)
 
     def getParsed990Filing(self):
+        self.__parse990Filing()
         return self.__parsed_990_filing
 
 

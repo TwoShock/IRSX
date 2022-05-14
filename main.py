@@ -1,5 +1,8 @@
 from textwrap import indent
+from irsx.xmlrunner import XMLRunner
 import threading
+from memory_profiler import profile
+import json
 import pandas as pd
 import numpy as np
 from CSVGenerator.GrantCSVGenerator import GrantCSVGenerator
@@ -29,7 +32,7 @@ def buildEinToObjectIdLookupMap():
     return einToObjectIdMap
 
 
-lookup = loadPickleObject('./pickle/einLookup.pkl')
+lookup = loadPickleObject('./pickle/einToObjectIDMap.pkl')
 
 einList1 = pd.read_csv('nccs_pd_ein.csv')['ein'].tolist()
 einList2 = pd.read_csv('nccs_Philantropy_ein.csv')['ein'].tolist()
@@ -37,12 +40,11 @@ einList2 = pd.read_csv('nccs_Philantropy_ein.csv')['ein'].tolist()
 i1 = np.intersect1d(list(lookup.keys()), einList1)
 i2 = np.intersect1d(list(lookup.keys()), einList2).tolist()
 
-
 def generateCSV(inputList, start, end, outputPath):
     GrantCSVGenerator(inputList[start:end]).generateCSV(outputPath)
 
 def writeCSVIncrementally(inputList, start, end, outputPath):
-    GrantCSVGenerator(inputList[start:end]).writeCSVIncrementally(outputPath)
+    GrantCSVGenerator(inputList[start:end]).writeSkedICSVIncrementally(outputPath)
 
 
 def multiThreadCSVResult(inputList, folderOutputPath, numberOfThreads):
@@ -58,5 +60,10 @@ def multiThreadCSVResult(inputList, folderOutputPath, numberOfThreads):
         thread.start()
     for thread in pool:
         thread.join()
-
-writeCSVIncrementally(i2[0:30],0,30,'output3.csv')
+ein = 131684331
+objectIds = lookup[ein]
+del lookup
+# GrantDataExtractor(ein).getGrantData()
+# with open('tmp.json','w') as file:
+#     file.write(json.dumps(GrantDataExtractor(ein).getGrantData(),indent=4))
+GrantCSVGenerator([ein]).write990PFSkedIncrementally('paid.csv','approved.csv')

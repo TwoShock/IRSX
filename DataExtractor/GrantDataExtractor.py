@@ -1,4 +1,5 @@
 import os
+from turtle import filling
 from irsx.xmlrunner import XMLRunner
 from IRSParsers.Json990Parser import Json990Parser
 from utils.pickle_utils import loadPickleObject
@@ -13,7 +14,7 @@ This class will extract the grant data for all filings of a given ein if they ex
 class GrantDataExtractor:
     dir = os.path.dirname(__file__)
     lookup = loadPickleObject(
-        os.path.join(dir, '../pickle/einLookup.pkl'))
+        os.path.join(dir, '../pickle/einToObjectIDMap.pkl'))
     def __init__(self, ein) -> None:
         self.__ein = ein
         self.__objectIDs = []
@@ -39,14 +40,16 @@ class GrantDataExtractor:
             currentFilingData['grants'] = filing['grants_to_organizations_in_the_us']
         else:
             currentFilingData['grants'] = []
-        return currentFilingData
+        if('GrantsPaidDuringYear' in filing.keys()):
+            currentFilingData['GrantsPaidDuringYear'] = filing['GrantsPaidDuringYear']
+        else:
+            currentFilingData['GrantsPaidDuringYear'] = []
+        if('GrantsPaidDuringYear' in filing.keys()):
+            currentFilingData['GrantsApprovedForFuture'] = filing['GrantsApprovedForFuture']
+        else:
+            currentFilingData['GrantsApprovedForFuture'] = []
 
-    def __filterGrantDataToRemoveEmptyGrants(self, grantData: list) -> list:
-        filteredGrantData = []
-        for grant in grantData:
-            if(len(grant['grants']) != 0):
-                filteredGrantData.append(grant)
-        return filteredGrantData
+        return currentFilingData
 
     def getObjectIDCount(self):
         return len(self.__objectIDs)
@@ -56,5 +59,4 @@ class GrantDataExtractor:
         for filing in self.__filings:
             if(len(list(filing.keys())) != 0):
                 grantData.append(self.__filterAndReturnFilingData(filing))
-        grantData = self.__filterGrantDataToRemoveEmptyGrants(grantData)
         return grantData
